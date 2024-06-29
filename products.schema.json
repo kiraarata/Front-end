@@ -1,0 +1,11 @@
+{
+    "type": "object",
+    "properties": {
+      "id": { "type": "integer" },
+      "name": { "type": "string" },
+      "categoryId": { "type": "integer" },
+      "price": { "type": "number" }
+    },
+    "required": ["id", "name", "categoryId", "price"]
+  }
+  

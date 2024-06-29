@@ -1,0 +1,26 @@
+{
+  "products": [
+    {
+      "id": "3813",
+      "name": "baso urat",
+      "price": 50000,
+      "category": "baso urat",
+      "description": "enakkkk",
+      "image": "https://www.prjctreoco.com/wp-content/uploads/2022/08/bakso-urat.jpg"
+    }
+  ],
+  "categories": [
+    {
+      "id": "f5ec",
+      "name": "baso urat"
+    },
+    {
+      "id": "90ca",
+      "name": "Jus Buah"
+    },
+    {
+      "id": "b233",
+      "name": "Baso Solo"
+    }
+  ]
+}

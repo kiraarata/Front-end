@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Category Management</title>
+  <!-- Replace Bootstrap with Tailwind CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    h2 {
+      margin-bottom: 30px;
+    }
+
+    table {
+      margin-top: 20px;
+      border-collapse: collapse;
+      width: 100%;
+    }
+
+    th,
+    td {
+      text-align: left;
+      padding: 8px;
+    }
+
+    th {
+      background-color: #f2f2f2;
+    }
+
+    .form-group {
+      margin-bottom: 20px;
+    }
+      /* CSS untuk menambahkan garis tepi pada tabel dan sel */
+  table {
+    margin-top: 20px;
+    border-collapse: collapse;
+    width: 100%;
+    border: 1px solid #e2e8f0; /* tambahkan garis tepi pada tabel */
+  }
+
+  th,
+  td {
+    text-align: left;
+    padding: 8px;
+    border: 1px solid #e2e8f0; /* tambahkan garis tepi pada sel */
+  }
+
+  th {
+    background-color: #f2f2f2;
+  }
+
+  /* CSS untuk menyembunyikan garis atas pada sel header pertama */
+  th:first-child {
+    border-top-left-radius: 0.25rem;
+  }
+
+  /* CSS untuk menyembunyikan garis atas pada sel header terakhir */
+  th:last-child {
+    border-top-right-radius: 0.25rem;
+  }
+
+  /* CSS untuk menyembunyikan garis bawah pada sel terakhir */
+  td:last-child {
+    border-bottom-right-radius: 0.25rem;
+  }
+  </style>
+</head>
+
+<body>
+  <nav class="bg-gray-100 p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <a class="text-xl font-bold" href="#">By Muhammad Barkah Sejati</a>
+      <div class="flex">
+        <a class="mx-2" href="index.html">Home</a>
+        <a class="mx-2" href="category.html">Categories</a>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mx-auto">
+    <h2 class="text-2xl font-bold mt-8">Manage Categories</h2>
+    <div class="form-group">
+      <input type="text" placeholder="Name of category" id="categoryName" class="border rounded px-4 py-2 focus:outline-none focus:border-blue-500" />
+      <button type="button" onclick="SaveCategory()" id="save" class="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mt-2">Save</button>
+    </div>
+
+    <table class="table-auto w-full mt-8">
+      <thead class="bg-gray-200">
+        <tr>
+          <th class="px-4 py-2">No.</th>
+          <th class="px-4 py-2">Name</th>
+          <th class="px-4 py-2">Action</th>
+        </tr>
+      </thead>
+      <tbody id="result"></tbody>
+    </table>
+  </div>
+
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+  <script>
+    const GetCategories = async () => {
+      try {
+        const response = await axios.get('http://localhost:3000/category');
+        const categories = response.data;
+        let bucket = '';
+        categories.forEach((category, index) => {
+          bucket += `
+            <tr>
+              <td class="px-4 py-2">${index + 1}</td>
+              <td class="px-4 py-2">${category.name}</td>
+              <td class="px-4 py-2">
+                <button type="button" class="bg-yellow-500 hover:bg-yellow-700 text-white font-bold py-1 px-2 rounded-sm" onclick="EditCategory('${category.id}')">Edit</button>
+                <button type="button" class="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded-sm" onclick="DeleteCategory('${category.id}')">Delete</button>
+              </td>
+            </tr>
+          `;
+        });
+        document.getElementById('result').innerHTML = bucket;
+      } catch (error) {
+        console.error('Error loading categories:', error.message);
+        alert('Error loading categories: ' + error.message);
+      }
+    };
+    GetCategories();
+
+    const SaveCategory = async () => {
+      try {
+        const name = document.getElementById('categoryName').value;
+        await axios.post('http://localhost:3000/category', { name });
+        GetCategories();
+      } catch (error) {
+        console.error('Error saving category:', error.message);
+        alert('Error saving category: ' + error.message);
+      }
+    };
+
+    const DeleteCategory = async (id) => {
+      if (confirm('Are you sure you want to delete this category?')) {
+        try {
+          await axios.delete(`http://localhost:3000/category/${id}`);
+          GetCategories();
+        } catch (error) {
+          console.error('Error deleting category:', error.message);
+          alert('Error deleting category: ' + error.message);
+        }
+      }
+    };
+
+    const EditCategory = async (id) => {
+      try {
+        const response = await axios.get(`http://localhost:3000/category/${id}`);
+        const category = response.data;
+        document.getElementById('categoryName').value = category.name;
+        document.getElementById('save').innerText = 'Update';
+        document.getElementById('save').setAttribute('onclick', `UpdateCategory('${id}')`);
+      } catch (error) {
+        console.error('Error editing category:', error.message);
+        alert('Error editing category: ' + error.message);
+      }
+    };
+
+    const UpdateCategory = async (id) => {
+      try {
+        const name = document.getElementById('categoryName').value;
+        await axios.patch(`http://localhost:3000/category/${id}`, { name });
+        document.getElementById('categoryName').value = '';
+        document.getElementById('save').innerText = 'Save';
+        document.getElementById('save').setAttribute('onclick', 'SaveCategory()');
+        GetCategories();
+      } catch (error) {
+        console.error('Error updating category:', error.message);
+        alert('Error updating category: ' + error.message);
+      }
+    };
+  </script>
+</body>
+
+</html>
